@@ -1,6 +1,25 @@
 from tkinter import *
 from random import randint
 
+def startNewRound():                                                                                                                                                
+    """                                                                                                                                                             
+    Эта функция генерирует новое слово для угадывания и отображает его                                                                                              
+    в центре экрана в виде звёздочек.                                                                                                                               
+    """                                                                                                                                                             
+    global wordStar, wordComp                                                                                                                                       
+                                                                                                                                                                    
+    # загадываем случайное слово                                                                                                                                    
+    wordComp = "ИНТЕРНЕТ"                                                                                                                                           
+    # формируем строку из '*'                                                                                                                                       
+    wordStar = '*' * len(wordComp)                                                                                                                                  
+    #  устанавливаем текст в метку                                                                                                                                  
+    wordLabel.config(text=wordStar)                                                                                                                                 
+    #  устанавливаем текст в метку                                                                                                                                  
+    scoreLabel["text"] = wordStar                                                                                                                                   
+    # устанавливаем метку по центру для вывода слова                                                                                                                
+    # winifo_reqwidth() вернёт длину метки                                                                                                                          
+    wordLabel.place(x=WIDTH // 2 - wordLabel.winfo_reqwidth() // 2, y=50)  
+
 # при нажатии мышкой на кнопку
 def pressLetter(n):
     print(f"{chr(st + n)}")
