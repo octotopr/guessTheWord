@@ -2,6 +2,28 @@ from tkinter import *
 from random import randint
 from tkinter import messagebox
 
+def pressKey(event):
+    """
+    This function is triggered when a key is pressed. It checks if the Ctrl key is being held down, and if so, it updates the displayed word with the current guess.
+
+    Parameters:
+        event (Event): The key press event.
+
+    Returns:
+        None
+    """
+    if event.keycode == 17:
+        wordLabel["text"] = wordComp
+
+    ch = event.char.upper()
+
+    if len(ch) == 0:
+        return 0
+    codeBtn = ord(ch) - st
+
+    if codeBtn >= 0 and codeBtn <= 32:
+        pressLetter(codeBtn)
+
 def updateInfo():
     """
     This function updates the information displayed on the screen, including the
@@ -59,8 +81,8 @@ def getWordFromFile():
         fd = open("word.dat", "r", encoding="utf-8")
         
         for i in fd.readlines():
-            l = l.replace("\n", "")
-            ret.append(l)
+            i = i.replace("\n", "")
+            ret.append(i)
 
         fd.close()
     except:
@@ -97,10 +119,10 @@ def startNewRound():
     This function generates a new word to guess and displays it
     in the center of the screen as asterisks.
     """
-    global wordStar, wordComp
+    global wordStar, wordComp, userTry
 
     # generate a random word
-    wordComp = "ИНТЕРНЕТ"
+    wordComp = dictionary[randint(0, len(dictionary) - 1)]
 
     # form a string of asterisks representing the word
     wordStar = "*" * len(wordComp)
@@ -114,6 +136,12 @@ def startNewRound():
     # place the label in the center of the screen
     # based on its requested width
     wordLabel.place(x=WIDTH // 2 - wordLabel.winfo_reqwidth() // 2, y=50)
+
+    for i in range(32):
+        btn[i]["text"] = chr(st + i)
+        btn[i]["state"] = "normal"
+    
+    userTry = 10
     updateInfo()
 
 def compareWord(s1: str, s2: str) -> int:
@@ -134,7 +162,7 @@ def compareWord(s1: str, s2: str) -> int:
         if s1[i] != s2[i]:
             res += 1
 
-    print(f"Совпадений найдено: {res}")
+    #print(f"Совпадений найдено: {res}")
     return res
 
 def getWordStart(ch):
@@ -171,6 +199,10 @@ def pressLetter(n):
     n (int): The index of the button that was clicked.
     """
     global wordStar, score, userTry
+
+    if btn[n]["text"] == '.':
+        return 0
+
     btn[n]["text"] = '.'
     btn[n]["state"] = "disabled"
     oldWordStar = wordStar
@@ -188,8 +220,22 @@ def pressLetter(n):
         
     updateInfo()
 
+    if wordComp == wordStar:
+        score += score // 2
+        updateInfo()
+
+        if score > topScore:
+            messagebox.showinfo("Поздравляем", "Вы угадали! Нажмите OK для продолжения игры.")
+            saveTopScore()
+        else:
+            messagebox.showinfo("Отлично", "Слово угаданно. Продолжаем играть.")
+        startNewRound()
+    elif userTry <= 0:
+        messagebox.showinfo("Бу!", "Попытки закончились... возвращайтесь скорей!")
+
 #Creating a Window
 root = Tk()
+root.bind("<Key>", pressKey)
 
  # window variability option
 root.resizable(False, False)
@@ -239,6 +285,7 @@ topScore = getTopScore()
 # attempts
 userTry = 10
 
+dictionary = getWordFromFile()
 # define button positions with letters
 st = ord('А')
 btn = []
