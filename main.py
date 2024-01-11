@@ -2,6 +2,21 @@ from tkinter import *
 from random import randint
 from tkinter import messagebox
 
+def updateInfo():
+    """
+    This function updates the information displayed on the screen, including the
+    current score, the top score, and the remaining attempts.
+
+    Parameters:
+        None
+
+    Returns:
+        None
+    """
+    scoreLabel["text"] = f"Ваши очки: {score}"
+    topScoreLabel["text"] = f"Лучший результат: {topScore}"
+    userTryLabel["text"] = f"Осталось попыток: {userTry}"
+
 def saveTopScore():
     """
     Save the current top score to the score.dat file.
@@ -85,7 +100,7 @@ def startNewRound():
     global wordStar, wordComp
 
     # generate a random word
-    wordComp = "INTERNET"
+    wordComp = "ИНТЕРНЕТ"
 
     # form a string of asterisks representing the word
     wordStar = "*" * len(wordComp)
@@ -99,6 +114,7 @@ def startNewRound():
     # place the label in the center of the screen
     # based on its requested width
     wordLabel.place(x=WIDTH // 2 - wordLabel.winfo_reqwidth() // 2, y=50)
+    updateInfo()
 
 def compareWord(s1: str, s2: str) -> int:
     """
@@ -154,13 +170,23 @@ def pressLetter(n):
     Parameters:
     n (int): The index of the button that was clicked.
     """
-    global wordStar
+    global wordStar, score, userTry
     btn[n]["text"] = '.'
     btn[n]["state"] = "disabled"
     oldWordStar = wordStar
     wordStar = getWordStart(chr(st + n))
     count = compareWord(oldWordStar, wordStar)
     wordLabel["text"] = wordStar
+    
+    if count > 0:
+        score += count * 5
+    else:
+        score -= 20
+        if score < 0:
+            score = 0
+        userTry -= 1
+        
+    updateInfo()
 
 #Creating a Window
 root = Tk()
