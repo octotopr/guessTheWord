@@ -1,5 +1,81 @@
 from tkinter import *
 from random import randint
+from tkinter import messagebox
+
+def saveTopScore():
+    """
+    Save the current top score to the score.dat file.
+
+    Args:
+        None
+
+    Returns:
+        None
+
+    Raises:
+        IOError: If the file cannot be opened for writing.
+    """
+    global topScore
+    topScore = score
+
+    try:
+        fd = open("score.dat", "w", encoding="utf-8")
+        fd.write(str(topScore))
+        fd.close()
+    except:
+        messagebox.showinfo("Ошибка", "Не удалось сохранить счет")
+
+def getWordFromFile():
+    """
+    This function reads a word list from a file and returns it as a list of words.
+
+    Parameters:
+        None
+
+    Returns:
+        list: A list of words read from the file.
+
+    Raises:
+        IOError: If the file cannot be opened.
+    """
+    ret = []
+
+    try:
+        fd = open("word.dat", "r", encoding="utf-8")
+        
+        for i in fd.readlines():
+            l = l.replace("\n", "")
+            ret.append(l)
+
+        fd.close()
+    except:
+        print("Не удалось открыть файл word.dat")
+        quit()
+    
+    return ret
+
+def getTopScore():
+    """
+    This function reads the top score from the score.dat file and returns it as
+    an integer.
+
+    Parameters:
+        None
+
+    Returns:
+        int: The top score from the score.dat file.
+
+    Raises:
+        IOError: If the file cannot be opened.
+    """
+    try:
+        fd = open("score.dat", "r", encoding="utf-8")
+        m = int(fd.readline())
+        fd.close()
+    except:
+        m = 0
+    
+    return m
 
 def startNewRound():
     """
@@ -132,7 +208,7 @@ userTryLabel.place(x=10, y=215)
 score = 0
 
 # game record
-topScore = 1000
+topScore = getTopScore()
 
 # attempts
 userTry = 10
